@@ -4,6 +4,8 @@ AnimeXDCCWatcher
 Easy anime watcher using dcc protocol
 
 ________________________
+Info:
+________________________
 More information can be found here:
 http://haruhichan.com/forum/showthread.php?43855-PopcornTime-Time4Popcorn-but-then-for-anime-AnimeXDCCWatcher-%28windows%29&p=48615#post48615
 
@@ -16,3 +18,4 @@ I DO NOT OWN HydraIRC or MPC-HC, IF THEIR RIGHTFULL OWNER WANTS THEM TO BE REMOV
 rareamvproductions@gmail.com
 
 If a coder wants to import this program, make sure you that you put the folders in the archive in bin/debug!
+I am sorry for the messy code, I am new to oop and new to gui's, so I just did things till they worked XD

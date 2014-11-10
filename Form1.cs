@@ -1371,7 +1371,7 @@ namespace AnimeXDCCWatcher
                 int pos_com_e = part_of_com.IndexOf("\"/>");
                 string com = part_of_com.Substring(0, pos_com_e);
 
-                data = data.Replace(com, "/join #horriblesubs\\015\\012\\015\\012/msg " + bot + "xdcc send #" + packnumb);
+                data = data.Replace(com, "/join #news\\015\\012\\015\\012/msg " + bot + "xdcc send #" + packnumb);
                 File.WriteAllText(path, data);
                 textBox2.Text = "succesfull written to profile xml file";
             

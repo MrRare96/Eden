@@ -2,8 +2,8 @@ c:\users\eldin's laptop\documents\visual studio 2013\Projects\AnimeXDCCWatcher\A
 c:\users\eldin's laptop\documents\visual studio 2013\Projects\AnimeXDCCWatcher\AnimeXDCCWatcher\bin\Debug\AnimeXDCCWatcher.exe
 c:\users\eldin's laptop\documents\visual studio 2013\Projects\AnimeXDCCWatcher\AnimeXDCCWatcher\bin\Debug\AnimeXDCCWatcher.pdb
 c:\users\eldin's laptop\documents\visual studio 2013\Projects\AnimeXDCCWatcher\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.csprojResolveAssemblyReference.cache
-c:\users\eldin's laptop\documents\visual studio 2013\Projects\AnimeXDCCWatcher\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.Form1.resources
 c:\users\eldin's laptop\documents\visual studio 2013\Projects\AnimeXDCCWatcher\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.Properties.Resources.resources
 c:\users\eldin's laptop\documents\visual studio 2013\Projects\AnimeXDCCWatcher\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.csproj.GenerateResource.Cache
 c:\users\eldin's laptop\documents\visual studio 2013\Projects\AnimeXDCCWatcher\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.exe
 c:\users\eldin's laptop\documents\visual studio 2013\Projects\AnimeXDCCWatcher\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.pdb
+C:\Users\Eldin's Laptop\Documents\Visual Studio 2013\Projects\AnimeXDCCWatcher\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.AnimeXDCCWatcher.resources

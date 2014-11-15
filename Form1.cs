@@ -16,15 +16,16 @@ using System.Diagnostics;
 
 namespace AnimeXDCCWatcher
 {
-    public partial class Form1 : Form
+    public partial class AnimeXDCCWatcher : Form
     {
 
         BackgroundWorker retrieveAnimes;
         BackgroundWorker retrieveBots;
         BackgroundWorker retrieveEpisodes;
         BackgroundWorker launchIrc;
+        BackgroundWorker retrieveSearch;
 
-        public Form1()
+        public AnimeXDCCWatcher()
         {
             InitializeComponent();
 
@@ -60,6 +61,14 @@ namespace AnimeXDCCWatcher
             launchIrc.WorkerReportsProgress = true;
             launchIrc.WorkerSupportsCancellation = true;
 
+            retrieveSearch = new BackgroundWorker();
+
+            retrieveSearch.DoWork += new DoWorkEventHandler(retrieveSearch_DoWork);
+            retrieveSearch.ProgressChanged += new ProgressChangedEventHandler(retrieveSearch_ProgressChanged);
+            retrieveSearch.RunWorkerCompleted += new RunWorkerCompletedEventHandler(retrieveSearch_RunWorkerCompleted);
+            retrieveSearch.WorkerReportsProgress = true;
+            retrieveSearch.WorkerSupportsCancellation = true;
+
            
         }
 
@@ -71,6 +80,7 @@ namespace AnimeXDCCWatcher
         //all variables public to every function/void/returner
         public static StringBuilder imglist = new StringBuilder();
         public static StringBuilder animenames = new StringBuilder();
+        public static StringBuilder search_animenames = new StringBuilder();
         public static string img_urls = String.Empty;
         public static string anime_names = String.Empty;
         public static string anime_and_pack = String.Empty;
@@ -83,6 +93,8 @@ namespace AnimeXDCCWatcher
         public static string anime_name_fp = String.Empty;
         public static string episode_Selected = String.Empty;
         public static string filename = String.Empty;
+        public static string test_mp_loc = String.Empty;
+        public static string search_input = String.Empty;
         public static int amount = 0;
         public static bool goone = false;
         public static bool homeVisible = true;
@@ -90,15 +102,99 @@ namespace AnimeXDCCWatcher
         public static bool use_synonym = false;
         public static bool file_status = true;
         public static bool syn_not_found = false;
+        public static bool mp_checker = true;
+        public static bool check_irc_quit = false;
+        public static bool use_search = false;
+        public static bool search_status = true;
 
        
        
         //all background workers
+        void retrieveSearch_DoWork(object sender, EventArgs e)
+        {
+            string anime_search_result = MalXMLParser(search_input);
+            if (anime_search_result.Contains("login== false") || anime_search_result == "")
+            {
+                search_status = false;
+            }
+            else
+            {
+
+
+                string[] search_result_split = anime_search_result.Split('^');
+
+                search_animenames.Clear();
+                imglist.Clear();
+                foreach (string animedata in search_result_split)
+                {
+                    if (animedata != "")
+                    {
+                        string[] infosplit = animedata.Split('|');
+
+                        string picture = infosplit[5];                       
+                        string animename = infosplit[0];
+                        search_animenames.Append(animename + "|");
+                        DlImg(picture, animename);
+                    }
+                }
+
+                string animenames = search_animenames.ToString();
+                string imgages = imglist.ToString();
+                string path = "search__imglist_.txt";
+                if (!File.Exists(path))
+                {
+                    // Create a file to write to. 
+                    using (StreamWriter sw = File.CreateText(path))
+                    {
+                        sw.WriteLine(animenames);
+                        sw.WriteLine("^");
+                        sw.WriteLine(imgages);
+                    }
+                }
+                else
+                {
+                    using (StreamWriter sw = new StreamWriter(path, false))
+                    {
+                        sw.WriteLine(animenames);
+                        sw.WriteLine("^");
+                        sw.WriteLine(imgages);
+                    }
+                }
+
+
+            }          
+        }
+
+        void retrieveSearch_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (!search_status)
+            {
+                MessageBox.Show("Nothing found, please search with another name!");
+                use_search = false;
+                image_repeater();
+            }
+            else
+            {
+               
+
+                textBox2.Text = "img downloading for search completed, please check cover/search/yoursearchinput folder!";
+                image_repeater();
+            }
+            
+        }
+
+        void retrieveSearch_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+           
+ 
+        }
+
+        
         void launchIrc_DoWork(object sender, EventArgs e)
         {
 
             string base_folder = Directory.GetCurrentDirectory();
-            string file = base_folder + @"\HydraIRC\Downloads\" + filename;
+            string file = base_folder + @"\HydraIRC\downloads\" + filename;
 
             if (File.Exists(file))
             {
@@ -117,30 +213,30 @@ namespace AnimeXDCCWatcher
                     //textBox1.Text = "irc launched succesful!";
                     int x = 0;
                     long oldlength = 0;
-
-
-                    System.Threading.Thread.Sleep(5000);
-                    if (File.Exists(file))
-                    {
-                        StartPlayer(filename);
-                    }
-                    else
-                    {
-                        filename = filename.Replace("?", "â„");
-                        file = base_folder + @"\HydraIRC\Downloads\" + filename;
-                        if (File.Exists(file))
-                        {
-                            StartPlayer(filename);
-                        }
-                    }
-
-                    System.Threading.Thread.Sleep(5000);
+                    bool playerstarts = true;
                     while (true)
                     {
                         System.Threading.Thread.Sleep(1000);
                         x++;
                         if (File.Exists(file))
                         {
+                            
+                            if (playerstarts)
+                            {
+                                playerstarts = false;
+                                StartPlayer(filename);
+                            }
+                            else if (playerstarts)
+                            {
+                                filename = filename.Replace("?", "â„");
+                                file = base_folder + @"\HydraIRC\downloads\" + filename;
+                                if (File.Exists(file))
+                                {
+                                    playerstarts = false;
+                                    StartPlayer(filename);
+                                }
+                            }
+
                             FileInfo fi = new FileInfo(file);
                             bool exists = fi.Exists;
                             long length = fi.Length;
@@ -149,8 +245,15 @@ namespace AnimeXDCCWatcher
 
                             if (length == oldlength)
                             {
-                                irc.Kill();
-                                break;
+                                try
+                                {
+                                    irc.Kill();
+                                    break;
+                                }
+                                catch
+                                {
+
+                                }
                             }
 
 
@@ -158,15 +261,14 @@ namespace AnimeXDCCWatcher
                         }
                         else
                         {
-                            irc.WaitForExit();
-                            break;
+                            
+                            
                         }
-
                     }
                 }
                 catch
                 {
-
+                    
                 }
             
             }
@@ -178,6 +280,11 @@ namespace AnimeXDCCWatcher
         void launchIrc_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             textBox2.Text = "irc launched, will quit when file is finishd downloading!";
+            if (check_irc_quit)
+            {
+                textBox4.Text = "irc quit manually";
+            }
+            textBox1.Text = test_mp_loc;
         }
 
         void launchIrc_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -373,10 +480,8 @@ namespace AnimeXDCCWatcher
                 {
                     flowLayoutPanel1.Controls.Remove(item);
                 }
-                
-            }
 
-           
+            }
 
             ComboBox eplist = new ComboBox();
             eplist.Name = "eplist";
@@ -440,7 +545,16 @@ namespace AnimeXDCCWatcher
             textBox3.Text = botstring;
             int bots_array_length = bots_array.Length;
 
-            if (bots_array_length > 1) 
+            foreach (Control item in flowLayoutPanel1.Controls.OfType<Control>())
+            {
+                if (item.Name == "botlist")
+                {
+                    flowLayoutPanel1.Controls.Remove(item);
+                }
+            }
+
+
+            if (bots_array_length > 1)
             {
 
                 foreach (Control item in flowLayoutPanel1.Controls.OfType<Control>())
@@ -482,7 +596,7 @@ namespace AnimeXDCCWatcher
                 use_synonym = true;
                 retrieveBots.RunWorkerAsync();
             }
-            
+
         }
 
         void retrieveBots_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -492,125 +606,52 @@ namespace AnimeXDCCWatcher
         }
 
         void retrieveBots_DoWork(object sender, DoWorkEventArgs e)
-        {
-            if (!use_synonym)
+        {                        
+            string path = "animesyn.txt";
+            string syn_all = File.ReadAllText(path);
+            StringBuilder bots = new StringBuilder();
+
+            int x = 0;
+            int b = 0;
+
+            if (File.Exists(path))
             {
-                string path = "animesyn.txt";
-                string syn_data = File.ReadAllText(path);
-                StringBuilder bots = new StringBuilder();
 
-                int x = 0;
-                int b = 0;
 
-                if (File.Exists(path) && syn_data != "")
+                botlist_visible = true;
+
+                if (syn_all != "")
                 {
-                    string[] splitter_syn = syn_data.Split('^');
-                    foreach (string anime_syn in splitter_syn)
+                    string[] syn_data = syn_all.Split('^');
+
+                    foreach (string syn_anime in syn_data)
                     {
-                        if (anime_syn == "\r\n")
+                        string data_syn = syn_anime.Replace("\r\n", ""); 
+                       
+
+                        if (data_syn != "")
                         {
-                            break;
-                        }
+                            string[] syn_split = data_syn.Split('|');
+                            string syno = String.Empty;
+                            string syno_f_ani = String.Empty;
 
-                        string[] split_anime_syn = anime_syn.Split('|');
-                        string anime_f_name = split_anime_syn[0].Replace("\r\n", "");
-                        string anime_syn_name = split_anime_syn[1].Replace("\r\n", "");
+                            syno = syn_split[1];
+                            syno_f_ani = syn_split[0];
+                            
 
-                        if (anime_name_fp.Contains(anime_f_name))
-                        {
-                            string search = anime_syn_name.Replace(" ", "+");
-                            string data = readIntel("http://nibl.co.uk/bots.php?search=" + search);
-
-                            botlist_visible = true;
-
-
-                            while (true)
+                            if (anime_name_fp.Contains(syno_f_ani))
                             {
-                                int bot_name_pos_s = data.IndexOf("<td class=\"botname\">");
-                                if (bot_name_pos_s < 1)
-                                {
-                                    break;
-                                }
-                                string botname_unf = data.Substring(bot_name_pos_s + 20);
-                                data = botname_unf;
-                                int bot_name_pos_e = botname_unf.IndexOf("<a href=");
-                                string botname = botname_unf.Substring(0, bot_name_pos_e);
-                                if (botstring.Contains(botname))
-                                {
-                                    // Console.WriteLine("bot already added");
-                                }
-                                else
-                                {
-                                    bots.Append(botname + "^");
-                                    botstring = bots.ToString();
-                                    retrieveBots.ReportProgress(b);
-                                    b++;
-                                }
-                            }
-                        }
-                    }
-                    string search2 = search_forbots.Replace(" ", "+");
-                    string data2 = readIntel("http://nibl.co.uk/bots.php?search=" + search2);
-
-                    botlist_visible = true;
-
-
-                    while (true)
-                    {
-                        int bot_name_pos_s = data2.IndexOf("<td class=\"botname\">");
-                        if (bot_name_pos_s < 1)
-                        {
-                            break;
-                        }
-                        string botname_unf = data2.Substring(bot_name_pos_s + 20);
-                        data2 = botname_unf;
-                        int bot_name_pos_e = botname_unf.IndexOf("<a href=");
-                        string botname = botname_unf.Substring(0, bot_name_pos_e);
-                        if (botstring.Contains(botname))
-                        {
-                            // Console.WriteLine("bot already added");
-                        }
-                        else
-                        {
-                            bots.Append(botname + "^");
-                            botstring = bots.ToString();
-                            retrieveBots.ReportProgress(b);
-                            b++;
-                        }
-                        x++;
-                    }
-                }
-                else
-                {
-
-                    if (File.Exists(path) && syn_data != "")
-                    {
-
-                        string[] splitter_syn = syn_data.Split('^');
-                        foreach (string anime_syn in splitter_syn)
-                        {
-                            if (anime_syn == "\r\n")
-                            {
-                                break;
-                            }
-
-                            string[] split_anime_syn = anime_syn.Split('|');
-                            string anime_f_name = split_anime_syn[0].Replace("\r\n", "");
-                            string anime_syn_name = split_anime_syn[1].Replace("\r\n", "");
-
-                            if (anime_name_fp.Contains(anime_f_name))
-                            {
-                                string search = anime_syn_name.Replace(" ", "+");
+                                string search = syno.Replace(" ", "+");
                                 string data = readIntel("http://nibl.co.uk/bots.php?search=" + search);
-
-                                botlist_visible = true;
-
-
                                 while (true)
                                 {
                                     int bot_name_pos_s = data.IndexOf("<td class=\"botname\">");
                                     if (bot_name_pos_s < 1)
                                     {
+                                        if (x < 2)
+                                        {
+                                            syn_not_found = true;
+                                        }
                                         break;
                                     }
                                     string botname_unf = data.Substring(bot_name_pos_s + 20);
@@ -628,27 +669,77 @@ namespace AnimeXDCCWatcher
                                         retrieveBots.ReportProgress(b);
                                         b++;
                                     }
-
-
-
                                     x++;
                                 }
                             }
-
-                            int botsnumber = botstring.Split('^').Length;
-                            if (botsnumber < 2)
-                            {
-                                syn_not_found = true;
-                            }
-
                         }
+                    }
+                }
+                string search2 = search_forbots.Replace(" ", "+");
+                string data2 = readIntel("http://nibl.co.uk/bots.php?search=" + search2);
+                x = 0;
+                while (true)
+                {
+                    int bot_name_pos_s = data2.IndexOf("<td class=\"botname\">");
+                    if (bot_name_pos_s < 1)
+                    {
+                        if (x < 2)
+                        {
+                            syn_not_found = true;
+                        }
+                        break;
+                    }
+                    string botname_unf = data2.Substring(bot_name_pos_s + 20);
+                    data2 = botname_unf;
+                    int bot_name_pos_e = botname_unf.IndexOf("<a href=");
+                    string botname = botname_unf.Substring(0, bot_name_pos_e);
+                    if (botstring.Contains(botname))
+                    {
+                        // Console.WriteLine("bot already added");
                     }
                     else
                     {
-                        file_status = false;
+                        bots.Append(botname + "^");
+                        botstring = bots.ToString();
+                        retrieveBots.ReportProgress(b);
+                        b++;
                     }
+                    x++;
                 }
-                retrieveBots.ReportProgress(100);
+            }
+            else
+            {
+                string search2 = search_forbots.Replace(" ", "+");
+                string data2 = readIntel("http://nibl.co.uk/bots.php?search=" + search2);
+                x = 0;
+                while (true)
+                {
+                    int bot_name_pos_s = data2.IndexOf("<td class=\"botname\">");
+                    if (bot_name_pos_s < 1)
+                    {
+                        if (x < 2)
+                        {
+                            syn_not_found = true;
+                        }
+                        break;
+                    }
+                    string botname_unf = data2.Substring(bot_name_pos_s + 20);
+                    data2 = botname_unf;
+                    int bot_name_pos_e = botname_unf.IndexOf("<a href=");
+                    string botname = botname_unf.Substring(0, bot_name_pos_e);
+                    if (botstring.Contains(botname))
+                    {
+                        // Console.WriteLine("bot already added");
+                    }
+                    else
+                    {
+                        bots.Append(botname + "^");
+                        botstring = bots.ToString();
+                        retrieveBots.ReportProgress(b);
+                        b++;
+                    }
+                    x++;
+                }
             }
         }
 
@@ -712,14 +803,8 @@ namespace AnimeXDCCWatcher
                 string part_of_url = container_img.Substring(anime_url_search_start + 23);
                 int anime_url_search_end = part_of_url.IndexOf("</div>");
 
-                
-
-
                 string animesearch = part_of_url.Substring(0, anime_url_search_end);
                 container_img = part_of_url.Substring(anime_url_search_end);
-
-          
-
 
                 //animesearch = Regex.Replace(animesearch, "[^0-9a-zA-Z]+", " ");
                // textBox3.Text = animesearch;
@@ -843,7 +928,14 @@ namespace AnimeXDCCWatcher
                         changeBotPackXML(botname, packnum);
                         filename = split_anipack[0];
                         textBox4.Text = filename;
-                        launchIrc.RunWorkerAsync();
+                        try
+                        {
+                            launchIrc.RunWorkerAsync();
+                        }
+                        catch
+                        {
+                            textBox1.Text = "cannot launch irc, background worker bussy";
+                        }
                     }
                     else
                     {
@@ -950,6 +1042,7 @@ namespace AnimeXDCCWatcher
             string synopsis_mal = String.Empty;
             string score = String.Empty;
             string amount_eps = String.Empty;
+            string synonyms = String.Empty;
             string richtextout = "You did not login, so no information can be retrieved from MAL!";
             if (anime_data.Contains("false"))
             {
@@ -958,7 +1051,8 @@ namespace AnimeXDCCWatcher
             }
             else
             {
-                string[] data_splitter = anime_data.Split('|');
+                string[] get_anime_info = anime_data.Split('^');
+                string[] data_splitter = get_anime_info[0].Split('|');
                 if (data_splitter.Length < 2)
                 {
                     richtextout = "Anime is propably not airing yet, no data could be found on it";
@@ -968,10 +1062,11 @@ namespace AnimeXDCCWatcher
                     synopsis_mal = data_splitter[1];
                     amount_eps = data_splitter[2];
                     score = data_splitter[3];
+                    synonyms = data_splitter[6];
                     synopsis_mal = WebUtility.HtmlDecode(synopsis_mal);
                     synopsis_mal = convertHtml(synopsis_mal);
 
-                    richtextout = "Total Episodes: " + amount_eps + "\n" + "MAL Score: " + score + "\n" + "\n" + "\n" + synopsis_mal + "\n" + "\n" + "\n" + "______________________________" + "\n" + "\n" + "If there are no bots available, look for a subgroup manually and use the name they give their episodes for this anime as synonim(and remove all the _ - ! from the synonym!). All synonyms are saved so you only have to do it once!";
+                    richtextout = "Total Episodes: " + amount_eps + "\n" + "MAL Score: " + score + "\n" + "\n" + "\n" + synopsis_mal + "\n" + "\n" + "\n" + "______________________________" + "\n" + "\n" + "If there are no bots available, look for a subgroup manually and use the name they give their episodes for this anime as synonim(and remove all the _ - ! from the synonym!). All synonyms are saved so you only have to do it once!" + "\n" + "\n" + "Possible synonym(s) from MAL are:" + "\n" + synonyms;
 
                     search_forbots = anime_name_fp;
 
@@ -1010,7 +1105,15 @@ namespace AnimeXDCCWatcher
 
         private void back_Click(object sender, MouseEventArgs e)
         {
-            botlist_visible = false;
+
+            foreach (Control item in flowLayoutPanel1.Controls.OfType<Control>())
+            {
+                if (item.Name == "botlist")
+                {
+                    flowLayoutPanel1.Controls.Remove(item);
+                }
+            }
+
             reset_layoutpanel();
             homeVisible = true;
             
@@ -1025,6 +1128,8 @@ namespace AnimeXDCCWatcher
             textBox3.Text = retrieve_syn.Text;
             string syn = retrieve_syn.Text;
             string path = "animesyn.txt";
+
+            
             
             if (!File.Exists(path))
             {
@@ -1076,103 +1181,225 @@ namespace AnimeXDCCWatcher
         private void image_repeater()
         {
 
-                string path = "animeimganame.txt";
-                string[] urls = new string[] { "" };
                 
-                string[] names = new string[] { "" };
 
-                botstring = String.Empty;
-
-                if (File.Exists(path))
-                {
-
-                    try
-                    {
-                        string txtdata = File.ReadAllText(path);
-                        string[] splitter = txtdata.Split('^');
-                        urls = splitter[1].Split('|');
-                        names = splitter[0].Split('|');
-                        amount = urls.Length;
-                    }
-                    catch
-                    {
-                        textBox4.Text = "something went wrong while splitting stuff";
-                    }
-
-                    if (amount < 1)
-                    {
-                        status_text();
-
-                        textBox1.Text = "there are no animes retrieved, yet, please login or refresh to retrieve current airing animes!";
-
-                        
-                    }
-                    else 
-                    {
-                       reset_layoutpanel();
-                       int x = 0;
-                       PictureBox[] pictures = new PictureBox[amount];
-                       Label[] labels = new Label[amount];
-                       Panel[] panels = new Panel[amount];
-                       string base_folder = Directory.GetCurrentDirectory();
-
-                       while (x != amount - 1)
-                       {
-                           string file = base_folder + "\\cover\\" + urls[x];
-                           file = file.Replace("\r\n", "");
-                           string name = names[x];
-                       
-                           System.Drawing.Image img = System.Drawing.Image.FromFile(file);
-
-                           panels[x] = new Panel();
-                           panels[x].Name = "Panel" + x.ToString();
-                           panels[x].Location = new Point(20 + (200 * x), 10);
-                           panels[x].Size = new Size(200, 300 + 50);
-                           panels[x].Padding = new Padding(10);
+                 string set_path = "mploc.ini";
+                 if (File.Exists(set_path))
+                 {
+                     string loc_d = File.ReadAllText(set_path);
+                     string[] loc_s = loc_d.Split('=');
+                     string mp_path = loc_s[1].Replace("\r\n", "");
+                     PlayerLocOut.Text = mp_path;
+                 }
+                 else
+                 {
+                     string standard_player = "\\MPC\\mpc-hc.exe";
+                     if (!File.Exists(standard_player))
+                     {
+                         MessageBox.Show("Standard player MPC-HC not found(" + standard_player + ")!" + "\n" + "Please choose a player when main window launches!");
+                         PlayerLocOut.Text = "SELECT YOUR MEDIA PLAYER HERE";
+                     }
+                 }
 
 
+                 if (!use_search)
+                 {
+                     string path = "animeimganame.txt";
+                     string[] urls = new string[] { "" };
+                     string[] names = new string[] { "" };
+                     botstring = String.Empty;
 
-                           pictures[x] = new PictureBox();
-                           pictures[x].Name = name + "|" + file;
-                           //pictures[x].Location = new Point(10 + (img.Width * x), 10);
-                           pictures[x].Size = new Size(200, 300);
-                           pictures[x].SizeMode = PictureBoxSizeMode.StretchImage;
-                           pictures[x].MouseClick += new MouseEventHandler(animeScreen_Click);
-                           pictures[x].Load(file);
-                           pictures[x].Visible = homeVisible;
+                     if (File.Exists(path))
+                     {
 
-                           labels[x] = new Label();
-                           labels[x].Location = new Point(0, 10 + 300);
-                           labels[x].Size = new Size(img.Width + 10, 40);
-                           labels[x].Text = name;
-                           labels[x].Visible = homeVisible;
+                         try
+                         {
+                             string txtdata = File.ReadAllText(path);
+                             string[] splitter = txtdata.Split('^');
+                             urls = splitter[1].Split('|');
+                             names = splitter[0].Split('|');
+                             amount = urls.Length;
+                         }
+                         catch
+                         {
+                             textBox4.Text = "something went wrong while splitting stuff";
+                         }
 
-                           panels[x].Controls.Add(pictures[x]);
-                           panels[x].Controls.Add(labels[x]);
-                           flowLayoutPanel1.Controls.Add(panels[x]);
+                         if (amount < 1)
+                         {
+                             status_text();
 
-                       
+                             textBox1.Text = "there are no animes retrieved, yet, please login or refresh to retrieve current airing animes!";
 
-                           x++;
-                       }
-                       
-                    }
-                }
-                else
-                {
-                    textBox1.Text = "something wen twrong while ouputting imgs, prop opening txt file";
-                    if (logincredentials == "")
-                    {
-                        MessageBox.Show("Welcome, to start using this program you need to" + System.Environment.NewLine + "login into your MyAnimeList account." + System.Environment.NewLine + "After that, you need to click on Retrieve Anime to continue!");
-                        state_r_a = "Log in using the form below!";
-                        status_text();
-                    }
-                    else
-                    {
-                        retrieveAnimes.RunWorkerAsync();
-                    }
-                    
-                }
+
+                         }
+                         else
+                         {
+                             reset_layoutpanel();
+                             int x = 0;
+                             PictureBox[] pictures = new PictureBox[amount];
+                             Label[] labels = new Label[amount];
+                             Panel[] panels = new Panel[amount];
+                             string base_folder = Directory.GetCurrentDirectory();
+
+                             while (x != amount - 1)
+                             {
+                                 string file = base_folder + "\\cover\\" + urls[x];
+                                 file = file.Replace("\r\n", "");
+                                 string name = names[x];
+
+                                 System.Drawing.Image img = System.Drawing.Image.FromFile(file);
+
+                                 panels[x] = new Panel();
+                                 panels[x].Name = "Panel" + x.ToString();
+                                 panels[x].Location = new Point(20 + (200 * x), 10);
+                                 panels[x].Size = new Size(200, 300 + 50);
+                                 panels[x].Padding = new Padding(10);
+
+
+
+                                 pictures[x] = new PictureBox();
+                                 pictures[x].Name = name + "|" + file;
+                                 //pictures[x].Location = new Point(10 + (img.Width * x), 10);
+                                 pictures[x].Size = new Size(200, 300);
+                                 pictures[x].SizeMode = PictureBoxSizeMode.StretchImage;
+                                 pictures[x].MouseClick += new MouseEventHandler(animeScreen_Click);
+                                 pictures[x].Load(file);
+                                 pictures[x].Visible = homeVisible;
+
+                                 labels[x] = new Label();
+                                 labels[x].Location = new Point(0, 10 + 300);
+                                 labels[x].Size = new Size(img.Width + 10, 40);
+                                 labels[x].Text = name;
+                                 labels[x].Visible = homeVisible;
+
+                                 panels[x].Controls.Add(pictures[x]);
+                                 panels[x].Controls.Add(labels[x]);
+                                 flowLayoutPanel1.Controls.Add(panels[x]);
+
+
+
+                                 x++;
+                             }
+
+                         }
+                     }
+                     else
+                     {
+                         textBox1.Text = "something wen twrong while ouputting imgs, prop opening txt file";
+                         if (logincredentials == "")
+                         {
+                             MessageBox.Show("Welcome, to start using this program you need to" + System.Environment.NewLine + "login into your MyAnimeList account." + System.Environment.NewLine + "After that, you need to click on Retrieve Anime to continue!");
+                             state_r_a = "Log in using the form below!";
+                             status_text();
+                         }
+                         else
+                         {
+                             retrieveAnimes.RunWorkerAsync();
+                         }
+
+                     }
+                 }
+                 else
+                 {
+
+                     string path = "search__imglist_.txt";
+                     string[] urls = new string[] { "" };
+                     string[] names = new string[] { "" };
+                     botstring = String.Empty;
+
+                     if (File.Exists(path))
+                     {
+
+                         try
+                         {
+                             string txtdata = File.ReadAllText(path);
+                             string[] splitter = txtdata.Split('^');
+                             urls = splitter[1].Split('|');
+                             names = splitter[0].Split('|');
+                             amount = urls.Length;
+                         }
+                         catch
+                         {
+                             textBox4.Text = "something went wrong while splitting stuff";
+                         }
+
+                         if (amount < 1)
+                         {
+                             status_text();
+
+                             textBox1.Text = "there are no animes retrieved, yet, please login or refresh to retrieve current airing animes!";
+
+
+                         }
+                         else
+                         {
+                             reset_layoutpanel();
+                             int x = 0;
+                             PictureBox[] pictures = new PictureBox[amount];
+                             Label[] labels = new Label[amount];
+                             Panel[] panels = new Panel[amount];
+                             string base_folder = Directory.GetCurrentDirectory();
+
+                             while (x != amount - 1)
+                             {
+                                 string file = base_folder + "\\cover\\search\\" + urls[x];
+                                 file = file.Replace("\r\n", "");
+                                 string name = names[x];
+
+                                 System.Drawing.Image img = System.Drawing.Image.FromFile(file);
+
+                                 panels[x] = new Panel();
+                                 panels[x].Name = "Panel" + x.ToString();
+                                 panels[x].Location = new Point(20 + (200 * x), 10);
+                                 panels[x].Size = new Size(200, 300 + 50);
+                                 panels[x].Padding = new Padding(10);
+
+
+
+                                 pictures[x] = new PictureBox();
+                                 pictures[x].Name = name + "|" + file;
+                                 //pictures[x].Location = new Point(10 + (img.Width * x), 10);
+                                 pictures[x].Size = new Size(200, 300);
+                                 pictures[x].SizeMode = PictureBoxSizeMode.StretchImage;
+                                 pictures[x].MouseClick += new MouseEventHandler(animeScreen_Click);
+                                 pictures[x].Load(file);
+                                 pictures[x].Visible = homeVisible;
+
+                                 labels[x] = new Label();
+                                 labels[x].Location = new Point(0, 10 + 300);
+                                 labels[x].Size = new Size(img.Width + 10, 40);
+                                 labels[x].Text = name;
+                                 labels[x].Visible = homeVisible;
+
+                                 panels[x].Controls.Add(pictures[x]);
+                                 panels[x].Controls.Add(labels[x]);
+                                 flowLayoutPanel1.Controls.Add(panels[x]);
+
+
+
+                                 x++;
+                             }
+
+                         }
+                     }
+                     else
+                     {
+                         textBox1.Text = "something went wrong while ouputting imgs, prop opening txt file";
+                         if (logincredentials == "")
+                         {
+                             MessageBox.Show("Welcome, to start using this program you need to" + System.Environment.NewLine + "login into your MyAnimeList account." + System.Environment.NewLine + "After that, you need to click on Retrieve Anime to continue!");
+                             state_r_a = "Log in using the form below!";
+                             status_text();
+                         }
+                         else
+                         {
+                             retrieveSearch.RunWorkerAsync();
+                         }
+
+                     }
+
+                 }
         }
 
         public void reset_layoutpanel()
@@ -1195,59 +1422,69 @@ namespace AnimeXDCCWatcher
         {
             string animedata = searchMAL(animename);
             string output = String.Empty;
+            StringBuilder outputdata = new StringBuilder();
             if (animedata == "could not login")
             {
                 output = "login== false";
             }
             else
             {
-                string[] anime = animedata.Split(new string[] { "<entry>" }, StringSplitOptions.None);
-                int total_founds = anime.Length;
+                string[] anime_data = animedata.Split(new string[] { "<entry>" }, StringSplitOptions.None);
+               
                 int x = 0;
                
-                while (x != total_founds - 1)
+                foreach(string anime in anime_data) 
                 {
-
-                    string anime_info_data = anime[x + 1];
-
-                    int pos_status_start = anime_info_data.IndexOf("<status>");
-                    string status = anime_info_data.Substring(pos_status_start + 8);
-                    int pos_status_end = status.IndexOf("</status>");
-                    string astatus = status.Substring(0, pos_status_end);
-
-                    int pos_aname_start = anime_info_data.IndexOf("<title>");
-                    string aname = anime_info_data.Substring(pos_aname_start + 7);
-                    int pos_aname_end = aname.IndexOf("</title>");
-                    string aaname = aname.Substring(0, pos_aname_end);
-
-                    int pos_syn_start = anime_info_data.IndexOf("<synopsis>");
-                    string synopsis = anime_info_data.Substring(pos_syn_start + 10);
-                    int pos_syn_end = synopsis.IndexOf("</synopsis>");
-                    synopsis = synopsis.Substring(0, pos_syn_end);
-
-                    int pos_score_start = anime_info_data.IndexOf("<score>");
-                    string score = anime_info_data.Substring(pos_score_start + 7);
-                    int pos_score_end = score.IndexOf("</score>");
-                    score = score.Substring(0, pos_score_end);
-
-                    int pos_episodes_start = anime_info_data.IndexOf("<episodes>");
-                    string episodes = anime_info_data.Substring(pos_episodes_start + 10);
-                    int pos_episodes_end = episodes.IndexOf("</episodes>");
-                    episodes = episodes.Substring(0, pos_episodes_end);
-
-                    if (astatus == "Currently Airing")
+                    if (anime.Contains("<status>"))
                     {
-                        output = aaname + "|" + synopsis + "|" + episodes + "|" + score + "|login == true";
-                        break;
+                        string anime_info_data = anime;
+
+                        int pos_status_start = anime_info_data.IndexOf("<status>");
+                        string status = anime_info_data.Substring(pos_status_start + 8);
+                        int pos_status_end = status.IndexOf("</status>");
+                        string astatus = status.Substring(0, pos_status_end);
+
+                        int pos_aname_start = anime_info_data.IndexOf("<title>");
+                        string aname = anime_info_data.Substring(pos_aname_start + 7);
+                        int pos_aname_end = aname.IndexOf("</title>");
+                        string aaname = aname.Substring(0, pos_aname_end);
+
+                        int pos_syn_start = anime_info_data.IndexOf("<synopsis>");
+                        string synopsis = anime_info_data.Substring(pos_syn_start + 10);
+                        int pos_syn_end = synopsis.IndexOf("</synopsis>");
+                        synopsis = synopsis.Substring(0, pos_syn_end);
+
+                        int pos_score_start = anime_info_data.IndexOf("<score>");
+                        string score = anime_info_data.Substring(pos_score_start + 7);
+                        int pos_score_end = score.IndexOf("</score>");
+                        score = score.Substring(0, pos_score_end);
+
+                        int pos_episodes_start = anime_info_data.IndexOf("<episodes>");
+                        string episodes = anime_info_data.Substring(pos_episodes_start + 10);
+                        int pos_episodes_end = episodes.IndexOf("</episodes>");
+                        episodes = episodes.Substring(0, pos_episodes_end);
+
+                        int pos_pic_start = anime_info_data.IndexOf("<image>");
+                        string pic = anime_info_data.Substring(pos_pic_start + 7);
+                        int pos_pic_end = pic.IndexOf("</image>");
+                        pic = pic.Substring(0, pos_pic_end);
+
+                        int pos_synonyms_start = anime_info_data.IndexOf("<synonyms>");
+                        string synonyms = anime_info_data.Substring(pos_synonyms_start + 10);
+                        int pos_synonyms_end = synonyms.IndexOf("</synonyms>");
+                        synonyms = synonyms.Substring(0, pos_synonyms_end);
+
+
+                        output = aaname + "|" + synopsis + "|" + episodes + "|" + score + "|" + astatus + "|" + pic + "|" + synonyms + "|login == true";
+                        outputdata.Append(output + "^");
+
+
+
+                        x++;
                     }
-                    else
-                    {
-                        output = "anime is not airing, seperate function needs to be written for this, if you see this contact rareamv on the forum!";
-                    }
-                    x++;
                 }
 
-               
+                output = outputdata.ToString();
             }
             return output;
         }
@@ -1270,13 +1507,22 @@ namespace AnimeXDCCWatcher
             string[] imgnames = link.Split('/');
             string img = imgnames[6];
             string file = animename + "_" + img;
+            string folder_path = String.Empty;
             file = CleanFileName(file);
             imglist.Append(file + "|");
             animenames.Append(animename + "|");
 
 
             string base_folder = Directory.GetCurrentDirectory();
-            string folder_path = base_folder + "\\cover\\";
+            if (use_search)
+            {
+                folder_path = base_folder + "\\cover\\search\\\\";
+            }
+            else
+            {
+                folder_path = base_folder + "\\cover\\";
+            }
+            
             if (!Directory.Exists(folder_path))
             {
                 Directory.CreateDirectory(folder_path);
@@ -1316,8 +1562,6 @@ namespace AnimeXDCCWatcher
             }
         }
 
-       
-
         public void changeNickXML()
         {
             try
@@ -1343,19 +1587,45 @@ namespace AnimeXDCCWatcher
 
         public void StartPlayer(string file)
         {
-            try
+            string set_path = "mploc.ini";
+            if (File.Exists(set_path))
             {
-                string base_folder = Directory.GetCurrentDirectory();
-                string location = base_folder + @"\MPC\mpc-hc.exe";
-                ProcessStartInfo start = new ProcessStartInfo();
-                start.Arguments = "\"" + base_folder + @"\HydraIRC\Downloads\" + file + "\"";
-                start.FileName = location;
-                Process irc = Process.Start(start);
-                //textBox1.Text = "irc launched succesful!";
+                string loc_d = File.ReadAllText(set_path);
+                string[] loc_s = loc_d.Split('=');
+                string mp_path = loc_s[1].Replace("\r\n", "");
+                test_mp_loc = mp_path;
+                try
+                {
+                    string base_folder = Directory.GetCurrentDirectory();
+                    string location = mp_path;
+                    ProcessStartInfo start = new ProcessStartInfo();
+                    start.Arguments = "\"" + base_folder + @"\HydraIRC\downloads\" + file + "\"";
+                    start.FileName = location;
+                    Process mediaplayer = Process.Start(start);
+                    //textBox1.Text = "irc launched succesful!";
+                }
+                catch
+                {
+                   test_mp_loc = mp_path;
+                    mp_checker = false;
+                }
             }
-            catch
+            else
             {
-                //textBox1.Text = "something went wrong while starting vlc?";
+                try
+                {
+                    string base_folder = Directory.GetCurrentDirectory();
+                    string location = test_mp_loc;
+                    ProcessStartInfo start = new ProcessStartInfo();
+                    start.Arguments = "\"" + base_folder + @"\HydraIRC\downloads\" + file + "\"";
+                    start.FileName = location;
+                    Process mediaplayer = Process.Start(start);
+                    //textBox1.Text = "irc launched succesful!";
+                }
+                catch
+                {
+                    mp_checker = false;
+                }
             }
         }
 
@@ -1377,6 +1647,7 @@ namespace AnimeXDCCWatcher
             
                
         }
+
         //all controls made by designer
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -1396,7 +1667,13 @@ namespace AnimeXDCCWatcher
 
         private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
+            flowLayoutPanel1.HorizontalScroll.Enabled = false;
+            flowLayoutPanel1.HorizontalScroll.Visible = false;
+        }
 
+        private void flowLayoutPanel1_MouseEnter(object sender, PaintEventArgs e)
+        {
+            flowLayoutPanel1.Focus();
         }
 
         private void uname_TextChanged(object sender, EventArgs e)
@@ -1419,11 +1696,13 @@ namespace AnimeXDCCWatcher
                 reset_layoutpanel();
                 homeVisible = true;
                 image_repeater();
+                flowLayoutPanel1.Focus();
             }
             else
             {
                 textBox1.Text = "Something went wrong while logging into mal, try again!";
                 state_r_a = "Something went wrong while logging into mal, try again!";
+                logincredentials = "";
                 status_text();
             }
         }
@@ -1444,6 +1723,28 @@ namespace AnimeXDCCWatcher
         {
             reset_layoutpanel();
             homeVisible = true;
+            use_search = false;
+            string base_folder = Directory.GetCurrentDirectory();
+            string path = "search__imglist_.txt";
+            string folder_path = base_folder + "\\cover\\search\\";
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+            else
+            {
+                textBox3.Text = "Could not delete: " + path + " dont worry, its nothing";
+            }
+
+            if (File.Exists(folder_path))
+            {
+                File.Delete(folder_path);
+            }
+            else
+            {
+                textBox3.Text = "Could not delete: " + folder_path + " dont worry, its nothing";
+            }
+
             image_repeater();
         }
 
@@ -1456,6 +1757,68 @@ namespace AnimeXDCCWatcher
         {
             string path = "animeimganame.txt";
             File.Delete(path);
+        }
+
+        private void PlayerLoc_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog playerLocation = new OpenFileDialog();
+            playerLocation.Filter = "programs|*.exe";
+            playerLocation.Title = "Select Your Standard Mediaplayer";
+
+            string set_path = "mploc.ini";
+
+            if (playerLocation.ShowDialog() == DialogResult.OK)
+            {
+                string PlayerLocation = playerLocation.FileName;
+                PlayerLocOut.Text = PlayerLocation;
+
+                if (!File.Exists(set_path))
+                {
+                    // Create a file to write to. 
+                    using (StreamWriter sw = File.CreateText(set_path))
+                    {
+                        sw.WriteLine("MPLOC = " + PlayerLocation);
+                        
+                    }
+                    
+                }
+                else
+                {
+                    using (StreamWriter sw = new StreamWriter(set_path, false))
+                    {
+                        sw.WriteLine("MPLOC =" + PlayerLocation);                      
+                        
+                    }
+                    
+                }
+            }
+
+        }
+
+        private void PlayerLocOut_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void searchinput_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void searchbut_Click(object sender, EventArgs e)
+        {
+            if (logincredentials != "")
+            {
+                reset_layoutpanel();
+                search_input = searchinput.Text;
+                use_search = true;
+                retrieveSearch.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("You are not logged in!");
+            }
+            
         }
 
        

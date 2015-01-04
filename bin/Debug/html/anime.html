@@ -1,0 +1,98 @@
+﻿<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AnimeXDCCWatcher</title>
+    <link rel="stylesheet" href="css/foundation.css" />
+    <link rel="stylesheet" href="css/own.css" />
+    <link rel="stylesheet" href="foundation-icons/foundation-icons.css" />
+    <script src="js/vendor/modernizr.js"></script> 
+
+  
+    
+  </head>
+  <body> 
+        <div class="icon-bar five-up" style="width: 100%; position:fixed; z-index: 1;">
+        <a href="index.html" class="item" id="Home">
+          <i class="fi-home white"></i>
+          <label>Home</label>
+        </a>
+        <a href="#" class="item" id="retrieve_a">
+          <i class="fi-download white"></i>
+          <label>Retrieve Airing Anime</label>
+        </a>
+        <a href="search.html" class="item" id="search">
+          <i class="fi-magnifying-glass white"></i>
+          <label>Search</label>
+        </a>
+        <a href="#" class="item" id="settingsbutton" data-reveal-id="settings">
+          <i class="fi-widget white"></i>
+          <label>Settings</label>
+        </a>
+        <a href="#" class="item" id="lA" data-reveal-id="lModal">
+          <i class="fi-torso white"></i>
+          <label><div id="show">Login</div></label>
+        </a>
+      </div>
+    
+      <div id="noMP" class="reveal-modal" data-reveal>
+       <h2> Select a media player(MPC-HC reccomended)!</h2> <br>
+       <p>Media Player: <button class="small button" id="mediaPlayer"> Select Media Player </button></p>
+       <a class="close-reveal-modal">&#215;</a>
+      </div>
+    <div id="nothing"></div>
+
+    <div id="lModal" class="reveal-modal" data-reveal>
+      <h2><i class="fi-torso black"></i> Login using your MAL account</h2>
+      <br>
+      Username: <input type="text" id="username" width="150px" />
+      <br>
+      Password: <input type="password" id="password" width="150px" />
+      <p> <button id="login" class="small button">Login</button></p> 
+      <a class="close-reveal-modal">&#215;</a>
+    </div>
+
+    <div id="settings" class="reveal-modal" data-reveal>
+      <h2><i class="fi-widget black"></i> Settings</h2>
+      <br>
+      Media Player: <button class="small button" id="mediaPlayer"> Select Media Player </button>
+      <br>
+      Custom IRC Username: <input type="password" id="password" width="150px" />
+      <p> <button id="settingsSet" class="small button">Save</button></p> 
+      <a class="close-reveal-modal">&#215;</a>
+    </div>
+
+
+
+<div class="row">
+    <div class="row"> <div class="large-12 columns" style="margin-top: 10%; text-align: center"> <div style="margin-top: 20px; width: 100%;"></div> <h2> Sword Art Online II </h2> </div> </div> </div> <div class="row"> <div class="large-2 columns"> <img id="1" src="http://cdn.myanimelist.net/images/anime/11/65185.jpg" style="height: 300px; min-width: 250px; float: left;" /> </div> <div class="large-10 columns"> <h5> One year after the SAO incident, Kirito is approached by Seijiro Kikuoka from Japan's Ministry of Internal Affairs and Communications Department &amp;quot;VR Division&amp;quot; with a rather peculiar request.&lt;br /&gt;
+&lt;br /&gt;
+That was an investigation on the &amp;quot;Death Gun&amp;quot; incident that occurred in the gun and steel filled VRMMO called Gun Gale Online (GGO). &amp;quot;Players who are shot by a mysterious avatar with a jet black gun lose their lives even in the real world...&amp;quot; Failing to turn down Kikuoka's bizarre request, Kirito logs in to GGO even though he is not completely convinced that the virtual world could physically affect the real world.&lt;br /&gt;
+&lt;br /&gt;
+Kirito wanders in an unfamiliar world in order to gain any clues about the &amp;quot;Death Gun.&amp;quot; Then, a female sniper named Sinon who owns a gigantic &amp;quot;Hecate II&amp;quot; rifle extends Kirito a helping hand. With Sinon's help, Kirito decides to enter the &amp;quot;Bullet of Bullets,&amp;quot; a large tournament to choose the most powerful gunner within the realm of GGO, in hopes to become the target of the &amp;quot;Death Gun&amp;quot; and make direct contact with the mysterious avatar.&lt;br /&gt;
+&lt;br /&gt;
+(Source: Crunchyroll) </h5> </div> </div>
+    
+    <div class="row">
+        <div class="large-12 columns">
+        <hr>
+          <p>
+            <div id="botselector"></div>
+          </p>
+
+          <p>
+            <div id="episodes"></div>
+          </p>
+        </div>
+    </div>
+  </div>
+</div>
+   
+    <script src="js/vendor/jquery.js"></script>
+    <script src="js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+    </script>
+  </body>
+</html>

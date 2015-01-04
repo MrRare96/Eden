@@ -7,3 +7,15 @@ c:\users\eldin's laptop\documents\visual studio 2013\Projects\AnimeXDCCWatcher\A
 c:\users\eldin's laptop\documents\visual studio 2013\Projects\AnimeXDCCWatcher\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.exe
 c:\users\eldin's laptop\documents\visual studio 2013\Projects\AnimeXDCCWatcher\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.pdb
 C:\Users\Eldin's Laptop\Documents\Visual Studio 2013\Projects\AnimeXDCCWatcher\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.AnimeXDCCWatcher.resources
+C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\bin\Debug\AnimeXDCCWatcher.exe.config
+C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.exe
+C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.pdb
+C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\bin\Debug\AnimeXDCCWatcher.exe
+C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\bin\Debug\AnimeXDCCWatcher.pdb
+C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.csprojResolveAssemblyReference.cache
+C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.AnimeXDCCWatcher.resources
+C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.Properties.Resources.resources
+C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.csproj.GenerateResource.Cache
+C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.csproj.ResolveComReference.cache

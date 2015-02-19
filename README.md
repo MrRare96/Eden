@@ -1,7 +1,7 @@
 AnimeXDCCWatcher
 ================
 
-Easy anime watcher using dcc protocol
+Eden
 
 ________________________
 Info:

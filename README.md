@@ -1,7 +1,6 @@
-AnimeXDCCWatcher
-================
-
 Eden
+================
+Watch your anime the lazy way :)
 
 ________________________
 Info:

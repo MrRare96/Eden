@@ -41,7 +41,6 @@ namespace AnimeXDCCWatcher
                             dcc.Downloader();
                             animeFile = dcc.getFileName();
                             //MessageBox.Show("Anime episode: " + animeFile);   
-                            break;
                         }
                     }
                 });

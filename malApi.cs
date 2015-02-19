@@ -11,7 +11,7 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 
 
-namespace AnimeXDCCWatcher
+namespace Eden
 {
     class malApi
     {
@@ -90,7 +90,7 @@ namespace AnimeXDCCWatcher
         public static bool Login()
         {
             WebRequest req = HttpWebRequest.Create("http://myanimelist.net/api/anime/search.xml?q=naruto");
-            req.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes(AnimeXDCCWatcher.username + ":" + AnimeXDCCWatcher.password));
+            req.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes(Eden.username + ":" + Eden.password));
             req.Method = "GET";
             try { 
                 using (StreamReader reader = new StreamReader(req.GetResponse().GetResponseStream()))

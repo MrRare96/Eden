@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using System.IO;
 
-namespace AnimeXDCCWatcher
+namespace Eden
 {
     class LaunchIRC
     {
@@ -34,7 +34,7 @@ namespace AnimeXDCCWatcher
 
                         if (ircData.Contains("DCC SEND") && ircData.Contains(irc.getUsername()))
                         {
-                            MessageBox.Show("download message received!");
+                           // MessageBox.Show("download message received!");
                             DCCClient dcc = new DCCClient(ircData);
                             dcc.getDccParts();
                             dcc.setDccValues();

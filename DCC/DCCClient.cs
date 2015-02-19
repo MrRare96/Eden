@@ -9,7 +9,7 @@ using System.Net;
 using System.IO;
 using System.Windows.Forms;
 
-namespace AnimeXDCCWatcher
+namespace Eden
 {
     class DCCClient
     {
@@ -148,7 +148,7 @@ namespace AnimeXDCCWatcher
         //creates a tcp socket connection for the retrieved ip/port from the dcc ctcp by the dcc bot/server
         public void Downloader()
         {
-            MessageBox.Show("Download started, Your Anime will start playing soon! \r\n Anime episode: " + newFileName);        
+           // MessageBox.Show("Download started, Your Anime will start playing soon! \r\n Anime episode: " + newFileName);        
 
             TcpClient dltcp = new TcpClient(newIp, newPortNum);
             NetworkStream dlstream = dltcp.GetStream();

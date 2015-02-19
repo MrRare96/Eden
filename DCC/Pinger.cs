@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace AnimeXDCCWatcher
+namespace Eden
 {
     class Pinger
     {

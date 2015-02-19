@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO;
 
-namespace AnimeXDCCWatcher
+namespace Eden
 {
     class IrcConnect
     {
@@ -100,7 +100,7 @@ namespace AnimeXDCCWatcher
                 Pinger ping = new Pinger();
                 ping.Start();
 
-                writeIrc("USER " + newUsername + " 8 * : AnimeXDCCWatcher");
+                writeIrc("USER " + newUsername + " 8 * : Eden");
                 writeIrc("NICK " + newUsername);
                 writeIrc("JOIN " + newChannel);
 

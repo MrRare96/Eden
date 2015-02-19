@@ -1,6 +1,6 @@
-﻿namespace AnimeXDCCWatcher
+﻿namespace Eden
 {
-    partial class AnimeXDCCWatcher
+    partial class Eden
     {
         /// <summary>
         /// Required designer variable.
@@ -102,7 +102,7 @@
             this.webUI.TabIndex = 13;
             this.webUI.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webUI_DocumentCompleted);
             // 
-            // AnimeXDCCWatcher
+            // Eden
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -111,8 +111,8 @@
             this.Controls.Add(this.webUI);
             this.Controls.Add(this.groupBox3);
             this.Margin = new System.Windows.Forms.Padding(4);
-            this.Name = "AnimeXDCCWatcher";
-            this.Text = "AnimeXDCCWatcher";
+            this.Name = "Eden";
+            this.Text = "Eden";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();

@@ -7,7 +7,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.IO;
 
-namespace AnimeXDCCWatcher
+namespace Eden
 {
     class searchAnime
     {
@@ -109,7 +109,7 @@ namespace AnimeXDCCWatcher
         private string Search;
         private String appdir = Path.GetDirectoryName(Application.ExecutablePath);
         private bool succes = false;
-        private malApi mal = new malApi(AnimeXDCCWatcher.username, AnimeXDCCWatcher.password);
+        private malApi mal = new malApi(Eden.username, Eden.password);
         public static Thread retrieveSearch;
         public static string search_html;
     }

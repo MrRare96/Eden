@@ -19,3 +19,15 @@ C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.cspr
 C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\bin\Debug\Newtonsoft.Json.dll
 C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\bin\Debug\Newtonsoft.Json.xml
 C:\Users\Eldin\Documents\GitHub\AnimeXDCCWatcher\obj\Debug\AnimeXDCCWatcher.csproj.ResolveComReference.cache
+C:\Users\Eldin\Documents\Visual Studio 2013\Projects\AnimeXDCCWatcher-master\obj\Debug\AnimeXDCCWatcher.csproj.ResolveComReference.cache
+C:\Users\Eldin\Documents\Visual Studio 2013\Projects\AnimeXDCCWatcher-master\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Eldin\Documents\Visual Studio 2013\Projects\AnimeXDCCWatcher-master\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Eldin\Documents\Visual Studio 2013\Projects\AnimeXDCCWatcher-master\obj\Debug\AnimeXDCCWatcher.csproj.GenerateResource.Cache
+C:\Users\Eldin\Documents\Visual Studio 2013\Projects\AnimeXDCCWatcher-master\bin\Debug\Eden.exe.config
+C:\Users\Eldin\Documents\Visual Studio 2013\Projects\AnimeXDCCWatcher-master\bin\Debug\Eden.exe
+C:\Users\Eldin\Documents\Visual Studio 2013\Projects\AnimeXDCCWatcher-master\bin\Debug\Eden.pdb
+C:\Users\Eldin\Documents\Visual Studio 2013\Projects\AnimeXDCCWatcher-master\obj\Debug\Eden.Properties.Resources.resources
+C:\Users\Eldin\Documents\Visual Studio 2013\Projects\AnimeXDCCWatcher-master\obj\Debug\Eden.exe
+C:\Users\Eldin\Documents\Visual Studio 2013\Projects\AnimeXDCCWatcher-master\obj\Debug\Eden.pdb
+C:\Users\Eldin\Documents\Visual Studio 2013\Projects\AnimeXDCCWatcher-master\obj\Debug\Eden.Eden.resources
+C:\Users\Eldin\Documents\Visual Studio 2013\Projects\AnimeXDCCWatcher-master\obj\Debug\AnimeXDCCWatcher.csprojResolveAssemblyReference.cache

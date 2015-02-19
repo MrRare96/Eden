@@ -7,7 +7,7 @@ using System.IO;
 using System.Net;
 using System.Threading;
 
-namespace AnimeXDCCWatcher
+namespace Eden
 {
     class AnimeData
     {
@@ -33,7 +33,7 @@ namespace AnimeXDCCWatcher
 
         public void getAnimeInfo()
         {
-            malApi mal = new malApi(AnimeXDCCWatcher.username, AnimeXDCCWatcher.password);
+            malApi mal = new malApi(Eden.username, Eden.password);
             mal.GetAnimeXML(AnimeName, "Currently Airing");
             string[] AnimeInfo = mal.GetAnimeInfo(AnimeName, "Currently Airing");
             string htmlpart1 = String.Empty;
@@ -50,7 +50,7 @@ namespace AnimeXDCCWatcher
                     string CoverUrl = animeInfoParts[5];
                     string Synopsis = animeInfoParts[4];
                     string ImgUrl = mal.DownloadCover(Title, CoverUrl, @"Search\cover");
-                    htmlpart1 = "<div class=\"row\"> <div class=\"large-12 columns\" style=\"margin-top: 10%; text-align: center\"> <div style=\"margin-top: 20px; width: 100%;\"></div> <h2> " + Title + " </h2> </div> </div> </div> <div class=\"row\"> <div class=\"large-2 columns\"> <img id=\"1\" src=\"" + CoverUrl + "\" style=\"height: 300px; min-width: 250px; float: left;\" /> </div> <div class=\"large-10 columns\"> <h5> " + Synopsis + " </h5> </div> </div>";
+                    htmlpart1 = "<div class=\"row\"> <div class=\"small-12 columns\" style=\"margin-top: 10%; text-align: center\"> <div style=\"margin-top: 20px; width: 100%;\"></div> <h2> " + Title + " </h2> </div> </div> </div> <div class=\"row\"> <div class=\"small-12 medium-4 large-2 columns\"> <img id=\"1\" src=\"" + CoverUrl + "\" style=\"height: 300px; float: left;\" /> </div> <div class=\"small-12 medium-8 large-10 columns\"> <h5> " + Synopsis + " </h5> </div> </div>";
                 }
 
             }

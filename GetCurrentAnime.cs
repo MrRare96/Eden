@@ -9,7 +9,7 @@ using System.IO;
 using System.Net;
 using Newtonsoft.Json;
 
-namespace AnimeXDCCWatcher
+namespace Eden
 {
     class GetCurrentAnime
     {
@@ -40,7 +40,7 @@ namespace AnimeXDCCWatcher
                     bool check = true;
                     int x = 0;
 
-                    malApi mal = new malApi(AnimeXDCCWatcher.username, AnimeXDCCWatcher.password);
+                    malApi mal = new malApi(Eden.username, Eden.password);
 
                     string[] jsonar = jsonfull.Split(new string[] { "{\"_" }, StringSplitOptions.None);
                     try

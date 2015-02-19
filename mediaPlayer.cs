@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.IO;
 
-namespace AnimeXDCCWatcher
+namespace Eden
 {
     class mediaPlayer
     {
@@ -32,7 +32,7 @@ namespace AnimeXDCCWatcher
                 string mp_loc = loc_s[1].Replace("\r\n", "");
                 try
                 {
-                    string base_folder = AnimeXDCCWatcher.appdir;
+                    string base_folder = Eden.appdir;
                     string location = mp_loc;
                     ProcessStartInfo start = new ProcessStartInfo();
                     start.Arguments = "\"" + base_folder + @"\\" + filename + "\"";
@@ -49,7 +49,7 @@ namespace AnimeXDCCWatcher
             {
                 try
                 {
-                    string base_folder = AnimeXDCCWatcher.appdir;
+                    string base_folder = Eden.appdir;
                     ProcessStartInfo start = new ProcessStartInfo();
                     start.Arguments = "\"" + base_folder + @"\" + filename + "\"";
                     start.FileName = @"C:\Program Files (x86)\MPC-HC\mpc-hc.exe";

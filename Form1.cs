@@ -6,12 +6,12 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-namespace AnimeXDCCWatcher
+namespace Eden
 {
-    public partial class AnimeXDCCWatcher : Form
+    public partial class Eden : Form
     {
 
-        public AnimeXDCCWatcher()
+        public Eden()
         {
             WebBrowserVersionEmulation();
             InitializeComponent();
